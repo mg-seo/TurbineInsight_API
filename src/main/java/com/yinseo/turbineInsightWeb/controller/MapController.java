@@ -1,4 +1,4 @@
 package com.yinseo.turbineInsightWeb.controller;
 
-public class MarkerController {
+public class MapController {
 }
