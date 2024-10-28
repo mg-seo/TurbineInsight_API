@@ -16,10 +16,9 @@ public class UserServiceImpl implements  UserService {
         this.userRepository = userRepository;
     }
 
-    // ID로 사용자 조회
+    @Override
     public Optional<User> getUserById(String userId) {
         return userRepository.findById(userId);
     }
-
 }
 
