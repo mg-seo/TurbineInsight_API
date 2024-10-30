@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/businesses")
-@CrossOrigin(origins = "http://localhost:3000")
 public class BusinessController {
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
