@@ -20,7 +20,7 @@ import java.util.List;
 public class ImageServiceImpl implements ImageService {
 
     private final AmazonS3 amazonS3;
-    private final String bucketName = "your-bucket-name";
+    private final String bucketName = "turbine-image-storage-bucket";
     private final ImageRepository imageRepository;
     private final BusinessRepository businessRepository;
 
