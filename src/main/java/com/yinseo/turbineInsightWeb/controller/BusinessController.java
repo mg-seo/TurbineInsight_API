@@ -93,7 +93,7 @@ public class BusinessController {
     }
 
     // 특정 이미지 삭제
-    @DeleteMapping("/delete/{imageId}")
+    @DeleteMapping("/deleteImage/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long imageId) {
         imageService.deleteImage(imageId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
