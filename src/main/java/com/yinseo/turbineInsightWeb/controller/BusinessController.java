@@ -1,8 +1,10 @@
 package com.yinseo.turbineInsightWeb.controller;
 
 import com.yinseo.turbineInsightWeb.entity.Business;
+import com.yinseo.turbineInsightWeb.entity.Image;
 import com.yinseo.turbineInsightWeb.entity.User;
 import com.yinseo.turbineInsightWeb.service.BusinessService;
+import com.yinseo.turbineInsightWeb.service.ImageService;
 import com.yinseo.turbineInsightWeb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,11 +25,13 @@ public class BusinessController {
 
     private final BusinessService businessService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public BusinessController(BusinessService businessService, UserService userService) {
+    public BusinessController(BusinessService businessService, UserService userService, ImageService imageService) {
         this.businessService = businessService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     // 사용자 ID 존재 확인 (로그인 용도)
@@ -77,6 +82,28 @@ public class BusinessController {
         Business updatedBusiness = businessService.updateMemo(businessId, memo);
         logger.info("Memo for business ID: {} updated successfully", businessId);
         return new ResponseEntity<>(updatedBusiness, HttpStatus.OK);
+    }
+
+    // 특정 사업체에 이미지 추가
+    @PostMapping("/add")
+    public ResponseEntity<Image> addImage(@RequestParam("file") MultipartFile file,
+                                          @RequestParam("businessId") Long businessId) {
+        Image addedImage = imageService.addImage(file, businessId);
+        return new ResponseEntity<>(addedImage, HttpStatus.CREATED);
+    }
+
+    // 특정 이미지 삭제
+    @DeleteMapping("/delete/{imageId}")
+    public ResponseEntity<Void> deleteImage(@PathVariable Long imageId) {
+        imageService.deleteImage(imageId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // 특정 사업체의 모든 이미지 조회
+    @GetMapping("/business/{businessId}")
+    public ResponseEntity<List<Image>> getImagesByBusinessId(@PathVariable Long businessId) {
+        List<Image> images = imageService.getImagesByBusinessId(businessId);
+        return new ResponseEntity<>(images, HttpStatus.OK);
     }
 
     // 사업체 삭제
