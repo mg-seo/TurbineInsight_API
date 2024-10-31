@@ -21,6 +21,13 @@ public class MapController {
         this.markerService = markerService;
     }
 
+    // 특정 사업 ID로 마커 조회
+    @GetMapping("/{businessId}")
+    public ResponseEntity<List<Marker>> getMarkersByBusinessId(@PathVariable Long businessId) {
+        List<Marker> markers = markerService.getMarkersById(businessId);
+        return new ResponseEntity<>(markers, HttpStatus.OK); // 빈 리스트 포함하여 반환
+    }
+
     // 새로운 마커 추가 및 기존 마커 업데이트
     @PostMapping("/post/marker/save")
     public ResponseEntity<Marker> saveOrUpdateMarker(@RequestBody Marker marker) {
@@ -63,12 +70,6 @@ public class MapController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 오류 발생 시 400 Bad Request
         }
-    }
-
-    // 특정 사업 ID로 마커 조회
-    @GetMapping("/get/marker/{businessId}")
-    public List<Marker> getMarkersByBusinessId(@PathVariable Long businessId) {
-        return markerService.getMarkersById(businessId);
     }
 
     // 마커 삭제
