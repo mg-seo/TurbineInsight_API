@@ -110,8 +110,9 @@ public class BusinessController {
     @DeleteMapping("/delete/{businessId}")
     public ResponseEntity<Void> deleteBusiness(@PathVariable Long businessId) {
         logger.info("Deleting business with ID: {}", businessId);
+        imageService.deleteAllImagesForBusiness(businessId);
         businessService.deleteBusiness(businessId);
-        logger.info("Business with ID: {} deleted successfully", businessId);
+        logger.info("Business with ID: {} and associated images deleted successfully", businessId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
