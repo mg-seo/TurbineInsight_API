@@ -2,9 +2,11 @@ package com.yinseo.turbineInsightWeb.controller;
 
 import com.yinseo.turbineInsightWeb.entity.Business;
 import com.yinseo.turbineInsightWeb.entity.Image;
+import com.yinseo.turbineInsightWeb.entity.RegulatedArea;
 import com.yinseo.turbineInsightWeb.entity.User;
 import com.yinseo.turbineInsightWeb.service.BusinessService;
 import com.yinseo.turbineInsightWeb.service.ImageService;
+import com.yinseo.turbineInsightWeb.service.RegulatedAreaService;
 import com.yinseo.turbineInsightWeb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +28,14 @@ public class BusinessController {
     private final BusinessService businessService;
     private final UserService userService;
     private final ImageService imageService;
+    private final RegulatedAreaService regulatedAreaService;
 
     @Autowired
-    public BusinessController(BusinessService businessService, UserService userService, ImageService imageService) {
+    public BusinessController(BusinessService businessService, UserService userService, ImageService imageService, RegulatedAreaService regulatedAreaService) {
         this.businessService = businessService;
         this.userService = userService;
         this.imageService = imageService;
+        this.regulatedAreaService = regulatedAreaService;
     }
 
     // 사용자 ID 존재 확인 (로그인 용도)
@@ -124,6 +128,45 @@ public class BusinessController {
         imageService.deleteAllImagesForBusiness(businessId);
         businessService.deleteBusiness(businessId);
         logger.info("Business with ID: {} and associated images deleted successfully", businessId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // 규제지역 추가
+    @PostMapping("/regulatedArea/add")
+    public ResponseEntity<RegulatedArea> addRegulatedArea(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam String areaName,
+            @RequestParam String userId) {
+
+        logger.info("Adding regulated area with name: {} for user ID: {}", areaName, userId);
+        RegulatedArea newArea = regulatedAreaService.addRegulatedArea(file, areaName, userId);
+        return new ResponseEntity<>(newArea, HttpStatus.CREATED);
+    }
+
+    // 특정 사용자 ID로 규제지역 목록 조회
+    @GetMapping("/regulatedArea/list/{userId}")
+    public ResponseEntity<List<RegulatedArea>> getRegulatedAreasByUserId(@PathVariable String userId) {
+        logger.info("Getting regulated areas for user ID: {}", userId);
+        List<RegulatedArea> areas = regulatedAreaService.getRegulatedAreasByUserId(userId);
+        return new ResponseEntity<>(areas, HttpStatus.OK);
+    }
+
+    // 규제지역 이름 업데이트
+    @PutMapping("/regulatedArea/update/{areaId}")
+    public ResponseEntity<RegulatedArea> updateRegulatedArea(
+            @PathVariable Long areaId,
+            @RequestParam String areaName) {
+
+        logger.info("Updating regulated area ID: {} with new name: {}", areaId, areaName);
+        RegulatedArea updatedArea = regulatedAreaService.updateRegulatedArea(areaId, areaName);
+        return new ResponseEntity<>(updatedArea, HttpStatus.OK);
+    }
+
+    // 규제지역 삭제
+    @DeleteMapping("/regulatedArea/delete/{areaId}")
+    public ResponseEntity<Void> deleteRegulatedArea(@PathVariable Long areaId) {
+        logger.info("Deleting regulated area with ID: {}", areaId);
+        regulatedAreaService.deleteRegulatedArea(areaId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
