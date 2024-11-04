@@ -79,5 +79,13 @@ public class ImageServiceImpl implements ImageService {
     public List<Image> getImagesByBusinessId(Long businessId) {
         return imageRepository.findByBusiness_BusinessId(businessId);
     }
+
+    @Override
+    public void deleteAllImagesForBusiness(Long businessId) {
+        List<Image> images = imageRepository.findByBusiness_BusinessId(businessId);
+        for (Image image : images) {
+            amazonS3.deleteObject(bucketName, image.getFileName());
+        }
+    }
 }
 
