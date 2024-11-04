@@ -49,6 +49,17 @@ public class BusinessController {
         }
     }
 
+    //userId로 user정보 조회
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+        Optional<User> user = userService.getUserById(userId);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     // userId로 사업체 목록 조회
     @GetMapping("/list/{userId}")
     public ResponseEntity<List<Business>> getBusinessesByUserId(@PathVariable String userId) {
