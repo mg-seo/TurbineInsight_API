@@ -22,53 +22,56 @@ public class MapController {
     }
 
     // 특정 사업 ID로 마커 조회
-    @GetMapping("/{businessId}")
+    @GetMapping("/get/marker/{businessId}")
     public ResponseEntity<List<Marker>> getMarkersByBusinessId(@PathVariable Long businessId) {
         List<Marker> markers = markerService.getMarkersById(businessId);
+        System.out.println(markers.toString()); // 로그로 마커 리스트 확인
         return new ResponseEntity<>(markers, HttpStatus.OK); // 빈 리스트 포함하여 반환
     }
 
-    // 새로운 마커 추가 및 기존 마커 업데이트
-    @PostMapping("/post/marker/save")
-    public ResponseEntity<Marker> saveOrUpdateMarker(@RequestBody Marker marker) {
+    // 새로운 마커 추가
+    @PostMapping("/post/marker/add")
+    public ResponseEntity<Marker> addMarker(@RequestBody Marker marker) {
         try {
-            // markerId가 있는 경우 업데이트 처리
-            if (marker.getMarkerId() != null) {
-                Optional<Marker> existingMarkerOpt = markerService.getMarkerById(marker.getMarkerId());
-
-                if (existingMarkerOpt.isPresent()) {
-                    Marker existingMarker = existingMarkerOpt.get();
-
-                    // null 체크 후 필드 덮어쓰기
-                    if (marker.getLatitude() != null) {
-                        existingMarker.setLatitude(marker.getLatitude());
-                    }
-                    if (marker.getLongitude() != null) {
-                        existingMarker.setLongitude(marker.getLongitude());
-                    }
-                    if (marker.getAngle() != null) {
-                        existingMarker.setAngle(marker.getAngle());
-                    }
-                    if (marker.getMarkerName() != null) {
-                        existingMarker.setMarkerName(marker.getMarkerName());
-                    }
-                    if (marker.getModelName() != null) {
-                        existingMarker.setModelName(marker.getModelName());
-                    }
-
-                    Marker updatedMarker = markerService.saveMarker(existingMarker);
-                    return new ResponseEntity<>(updatedMarker, HttpStatus.OK); // 200 OK 반환
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 마커가 없는 경우 404 Not Found
-                }
-            }
-
-            // markerId가 없는 경우 새 마커 추가
             Marker savedMarker = markerService.saveMarker(marker);
             return new ResponseEntity<>(savedMarker, HttpStatus.CREATED); // 201 Created 반환
-
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 오류 발생 시 400 Bad Request
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 오류 발생 시 400 Bad Request 반환
+        }
+    }
+
+    // 마커 업데이트
+    @PostMapping("/post/marker/update/{markerId}")
+    public ResponseEntity<Marker> updateMarker(@PathVariable Long markerId, @RequestBody Marker marker) {
+        try {
+            Optional<Marker> existingMarkerOpt = markerService.getMarkerById(markerId);
+            if (existingMarkerOpt.isPresent()) {
+                Marker existingMarker = existingMarkerOpt.get();
+
+                // null 체크 후 필드 덮어쓰기
+                if (marker.getLatitude() != null) {
+                    existingMarker.setLatitude(marker.getLatitude());
+                }
+                if (marker.getLongitude() != null) {
+                    existingMarker.setLongitude(marker.getLongitude());
+                }
+                if (marker.getAngle() != null) {
+                    existingMarker.setAngle(marker.getAngle());
+                }
+                if (marker.getMarkerName() != null) {
+                    existingMarker.setMarkerName(marker.getMarkerName());
+                }
+                if (marker.getModelName() != null) {
+                    existingMarker.setModelName(marker.getModelName());
+                }
+
+                Marker updatedMarker = markerService.saveMarker(existingMarker);
+                return new ResponseEntity<>(updatedMarker, HttpStatus.OK); // 200 OK 반환
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 마커가 없는 경우 404 Not Found
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 오류 발생 시 400 Bad Request 반환
         }
     }
 
