@@ -1,13 +1,31 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package com.yinseo.turbineInsightWeb.service;
 
 import com.yinseo.turbineInsightWeb.entity.Business;
-
+import com.yinseo.turbineInsightWeb.entity.BusinessApp;
 import java.util.List;
+import java.util.Optional;
 
 public interface BusinessService {
-    Business createBusiness(String businessName, String userId); // 사업체 이름과 userId로 추가
-    List<Business> getBusinessesByUserId(String userId); // userId로 사업체 목록 조회
-    Business updateBusinessName(Long businessId, String businessName); // 사업체 이름만 업데이트
-    Business updateMemo(Long businessId, String memo);           // memo 컬럼만 업데이트
-    void deleteBusiness(Long businessId);                        // 특정 ID의 사업체 삭제
+    Business createBusiness(String businessName, String userId);
+
+    List<Business> getBusinessesByUserId(String userId);
+
+    Business updateBusinessName(Long businessId, String businessName);
+
+    Business updateMemo(Long businessId, String memo);
+
+    void deleteBusiness(Long businessId);
+
+    List<BusinessApp> getBusinessList();
+
+    Optional<BusinessApp> getBusinessByBno(Long bno);
+
+    BusinessApp saveBusinessApp(BusinessApp businessApp);
+
+    void deleteBusinessApp(List<Long> ids);
 }

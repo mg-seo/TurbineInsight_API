@@ -1,9 +1,8 @@
 package com.yinseo.turbineInsightWeb.service;
 
 import com.yinseo.turbineInsightWeb.entity.Business;
-
-import java.util.List;
-
+import com.yinseo.turbineInsightWeb.entity.BusinessApp;
+import com.yinseo.turbineInsightWeb.entity.EntityConverter;
 import com.yinseo.turbineInsightWeb.entity.User;
 import com.yinseo.turbineInsightWeb.repository.BusinessRepository;
 import com.yinseo.turbineInsightWeb.repository.UserRepository;
@@ -11,23 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BusinessServiceImpl implements BusinessService {
 
-    private final BusinessRepository businessRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private BusinessRepository businessRepository;
 
     @Autowired
-    public BusinessServiceImpl(BusinessRepository businessRepository, UserRepository userRepository) {
-        this.businessRepository = businessRepository;
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
+    // 웹 엔티티 메서드
     @Override
     public Business createBusiness(String businessName, String userId) {
-        // userId로 User 객체를 조회하여 Business 객체에 설정
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
 
@@ -42,14 +40,14 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public List<Business> getBusinessesByUserId(String userId) {
-        return businessRepository.findByUser_UserId(userId); // userId로 사업체 목록 조회
+        return businessRepository.findByUser_UserId(userId);
     }
 
     @Override
     public Business updateBusinessName(Long businessId, String businessName) {
         return businessRepository.findById(businessId)
                 .map(existingBusiness -> {
-                    existingBusiness.setBusinessName(businessName); // 사업체 이름만 업데이트
+                    existingBusiness.setBusinessName(businessName);
                     existingBusiness.setLastModifiedDate(LocalDateTime.now());
                     return businessRepository.save(existingBusiness);
                 })
@@ -60,16 +58,42 @@ public class BusinessServiceImpl implements BusinessService {
     public Business updateMemo(Long businessId, String memo) {
         return businessRepository.findById(businessId)
                 .map(existingBusiness -> {
-                    existingBusiness.setMemo(memo);                 // memo 컬럼만 업데이트
+                    existingBusiness.setMemo(memo);
                     existingBusiness.setLastModifiedDate(LocalDateTime.now());
                     return businessRepository.save(existingBusiness);
                 })
                 .orElseThrow(() -> new RuntimeException("Business not found with id " + businessId));
     }
 
-
     @Override
     public void deleteBusiness(Long businessId) {
-        businessRepository.deleteById(businessId); // 특정 ID의 사업체 삭제
+        businessRepository.deleteById(businessId);
+    }
+
+    // 앱 엔티티 메서드 (변환 작업 포함)
+    @Override
+    public List<BusinessApp> getBusinessList() {
+        List<Business> webBusinesses = businessRepository.findAllByOrderByBusinessIdDesc();
+        return webBusinesses.stream()
+                .map(EntityConverter::convertToAppBusiness)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<BusinessApp> getBusinessByBno(Long bno) {
+        Optional<Business> webBusiness = businessRepository.findById(bno);
+        return webBusiness.map(EntityConverter::convertToAppBusiness);
+    }
+
+    @Override
+    public BusinessApp saveBusinessApp(BusinessApp businessApp) {
+        Business webBusiness = EntityConverter.convertToWebBusiness(businessApp);
+        Business savedBusiness = businessRepository.save(webBusiness);
+        return EntityConverter.convertToAppBusiness(savedBusiness);
+    }
+
+    @Override
+    public void deleteBusinessApp(List<Long> ids) {
+        businessRepository.deleteAllById(ids);
     }
 }
