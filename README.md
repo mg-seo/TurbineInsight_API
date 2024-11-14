@@ -13,7 +13,7 @@
   <p align="center">
     Spring Boot로 구축된 백엔드 API로, 사용자와 비즈니스(풍력단지) 정보를 관리합니다.<br/> 
     Turbine Insight 앱, 웹과 연동되어 사용자는 어느 환경에서나 접근할 수 있습니다.<br/>
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://www.canva.com/design/DAGRiiHoTbY/Aq66hZwmU1mB7e8yzs_47w/edit?ui=eyJIIjp7IkEiOnRydWV9fQ"><strong>Explore the docs »</strong></a>
   </p>
 </div>
 
